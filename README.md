@@ -277,10 +277,10 @@ LIMIT 3;
 
 <br/>
 
-Выполнил: Ерасыл Отаров
-E-mail: otarov.logigue@gmail.com
-Mob. / WA: +7 705 528 17 17
-TG: @watasinomae
+Выполнил: Ерасыл Отаров  
+E-mail: otarov.logigue@gmail.com  
+Mob. / WA: +7 705 528 17 17  
+TG: @watasinomae  
 
 
 
