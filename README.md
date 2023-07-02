@@ -139,4 +139,154 @@ VALUES (6, 19, '2022-02-24'),
        (4, 13, DEFAULT);
 ```
 
+<br/>
+<br/>
+
+## Приступаем к решению задач
+
+<br/>
+
+### А) какую сумму в среднем в месяц тратит:
+### - пользователи в возрастном диапазоне от 18 до 25 лет включительно
+
+```
+SELECT sum(i.price)/count(DISTINCT date_trunc('month', p."date")) AS avg_monthly_spending
+FROM items i 
+JOIN purchases p 
+ON i.itemid = p.itemid 
+JOIN users u 
+ON u.userid = p.userid 
+WHERE u.age >= 18 AND u.age <=25;
+```
+
+### Ответ: 142124.445
+
+<br/>
+<br/>
+
+### - пользователи в возрастном диапазоне от 26 до 35 лет включительно
+
+<br/>
+
+Чтобы решить данную под задачу, нужно изменить условие <WHERE> на:
+```
+WHERE u.age >= 26 AND u.age <=35;
+```
+
+![Image alt](https://github.com/yotarov/postgres/blob/master/images/2.png)
+
+### Ответ: 169345.714
+
+<br/>
+<br/>
+
+### Б) в каком месяце года выручка от пользователей в возрастном диапазоне 35+ самая большая 
+```
+SELECT to_char(p."date", 'YYYY-MM') AS "month",
+       sum(i.price) AS max_revenue
+FROM items i 
+JOIN purchases p 
+ON i.itemid = p.itemid 
+JOIN users u 
+ON u.userid = p.userid 
+WHERE u.age >= 35
+GROUP BY month
+ORDER BY max_revenue DESC
+LIMIT 3;
+```
+
+Я посмотрел первые три значения на случай если будут несколько месяцев с одинаковыми или близкими значениями
+
+![Image alt](https://github.com/yotarov/postgres/blob/master/images/3.png)
+
+### Ответ: Ноябрь 2023 года (сори, при заполнении таблиц данными, случайно ушел в будущее :3 )
+
+<br/>
+<br/>
+
+### В) какой товар обеспечивает дает наибольший вклад в выручку за последний год
+
+<br/>
+
+Не совсем понятно что имеется ввиду под формулировкой "последний год": период с начала текущего года по сегодняшний день или 12-месячный период от текущей даты. Поэтому я предлагаю на выбор 2 решения для каждого из кейсов:
+
+- текущий год
+
+```
+SELECT i.itemid, sum(i.price) AS max_revenue
+FROM items i
+JOIN purchases p 
+ON i.itemid = p.itemid 
+WHERE to_char(p."date", 'YYYY') = '2023'
+GROUP BY i.itemid
+ORDER BY max_revenue DESC
+LIMIT 3;
+```
+
+Также смотрю 3 товара, чтобы удостовериться наверняка
+![Image alt](https://github.com/yotarov/postgres/blob/master/images/4.png)
+
+### Ответ: товар с id = 12
+
+<br/>
+
+- 12 месяцеа от текущей даты
+
+```
+SELECT i.itemid, sum(i.price) AS max_revenue
+FROM items i
+JOIN purchases p 
+ON i.itemid = p.itemid 
+WHERE p."date" >= now() - INTERVAL '12 month'
+GROUP BY i.itemid
+ORDER BY max_revenue DESC
+LIMIT 3;
+```
+
+![Image alt](https://github.com/yotarov/postgres/blob/master/images/5.png)
+
+### Ответ: товар с id = 12
+
+<br/>
+<br/>
+
+### Г) топ-3 товаров по выручке и их доля в общей выручке за любой год  
+
+```
+SELECT i.itemid, round(sum(i.price) * 100 / (SELECT sum(i.price) AS tot_rev
+	                            FROM items i
+	                            JOIN purchases p 
+	                            ON i.itemid = p.itemid 
+	                            WHERE to_char(p."date", 'YYYY') = '2022'), 2) AS "revenue_share, %"
+FROM items i
+JOIN purchases p 
+ON i.itemid = p.itemid 
+WHERE to_char(p."date", 'YYYY') = '2022'
+GROUP BY i.itemid 
+ORDER BY "revenue_share, %" DESC
+LIMIT 3;
+```
+
+### Ответ:
+![Image alt](https://github.com/yotarov/postgres/blob/master/images/6.png)
+
+<br/>
+<br/>
+
+---
+
+<br/>
+
+### Выполнил: Ерасыл Отаров
+### E-mail: otarov.logigue@gmail.com
+### Mob. / WA: +7 705 528 17 17
+### TG: @watasinomae
+
+
+
+
+
+
+
+
 
